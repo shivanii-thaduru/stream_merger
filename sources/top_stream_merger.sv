@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module top_stream_merger (
     input  logic clk,
     input  logic rst_n,
@@ -21,8 +22,17 @@ logic buf0_ready, buf1_ready;
 
 logic gnt0, gnt1;
 
-stream_buffer u_buf0 (.*);
-stream_buffer u_buf1 (.*);
+stream_buffer u_buf0 (
+    .clk(clk), .rst_n(rst_n),
+    .in_data(in0_data), .in_valid(in0_valid), .in_ready(in0_ready),
+    .out_data(buf0_data), .out_valid(buf0_valid), .out_ready(buf0_ready)
+);
+
+stream_buffer u_buf1 (
+    .clk(clk), .rst_n(rst_n),
+    .in_data(in1_data), .in_valid(in1_valid), .in_ready(in1_ready),
+    .out_data(buf1_data), .out_valid(buf1_valid), .out_ready(buf1_ready)
+);
 
 arbiter u_arb (
     .clk(clk),
@@ -36,7 +46,7 @@ arbiter u_arb (
 assign out_valid = (gnt0 && buf0_valid) || (gnt1 && buf1_valid);
 assign out_data  = gnt0 ? buf0_data : buf1_data;
 
-assign buf0_ready = gnt0;
-assign buf1_ready = gnt1;
+assign buf0_ready = gnt0 && out_ready;
+assign buf1_ready = gnt1 && out_ready;
 
 endmodule
