@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1773973099" />
-    <testcase name="test_stream_merger_hidden" classname="test_stream_merger_hidden" file="/mnt/c/Users/shiva/OneDrive/Documents/initial/git/stream_merger/tests/test_stream_merger_hidden.py" lineno="25" time="0.02390003204345703" sim_time_ns="2040.0" ratio_time="85355.53409680379" />
-  </testsuite>
-</testsuites>
