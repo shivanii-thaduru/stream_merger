@@ -1,1 +1,13 @@
 .pytest_cache/
+# Python
+__pycache__/
+*.pyc
+
+# Editor
+*.swp
+*.swo
+*.swx
+
+# Cocotb / sim
+sim_build/
+*.vvp
