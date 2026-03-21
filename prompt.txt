@@ -1,0 +1,73 @@
+You have a SystemVerilog RTL design that combines two separate input streams into one output stream.
+
+Each stream operates under a valid/ready handshake protocol:
+
+Input signals:
+- in0_data [7:0], in0_valid, in0_ready
+- in1_data [7:0], in1_valid, in1_ready
+
+Output signals:
+- out_data [7:0], out_valid, out_ready
+
+----------------------------------------
+FUNCTIONAL REQUIREMENTS
+----------------------------------------
+
+1. Handshake correctness:
+- A transfer only happens when valid && ready is true.
+- Under no circumstances should data be lost or duplicated.
+
+2. Per-stream ordering:
+- The order of data must be maintained for each input stream independently.
+- For instance, if in0 sends [1,2,3], the output should keep this order in relation to in0.
+
+3. Arbitration policy (STRICT):
+- When both inputs are valid at the same time, the merger should act as a FAIR round-robin arbiter.
+- Starvation is a no-go.
+- The arbiter must alternate grants when both streams are active.
+- If one stream goes idle, the other should immediately take full advantage of the bandwidth.
+
+4. Backpressure handling:
+- The design needs to manage arbitrary de-assertion of out_ready correctly.
+- No data should be lost or overwritten if the downstream is stalled.
+- Internal buffering must ensure everything stays correct under backpressure.
+
+5. Throughput requirement:
+- If out_ready is always 1 and at least one input is valid every cycle, the design should achieve 1 transfer per cycle.
+
+6. Latency constraint:
+- The design can introduce buffering but must avoid deadlock.
+- Data should eventually show up at the output once it’s accepted.
+
+7. Reset behavior:
+- Active-low reset (rst_n).
+- After a reset, all internal states must be cleared.
+- No unexpected valid output should occur after a reset until new input is accepted.
+
+----------------------------------------
+DESIGN STRUCTURE
+----------------------------------------
+
+The design consists of several modules:
+- stream_buffer (for input buffering)
+- arbiter (for grant generation)
+- top_stream_merger (integrating the components)
+
+You can modify any module, but you must preserve the module boundaries and interfaces.
+
+IMPORTANT EDGE CASES (MUST HANDLE)
+Your implementation must correctly handle:
+
+	Simultaneous valid inputs with intermittent out_ready
+	Rapid toggling of valid signals
+	One stream significantly faster than the other
+	Continuous backpressure for multiple cycles
+	Back-to-back transfers without gaps
+	Transition from both-active → single-active → both-active
+	RESTRICTIONS
+	Do NOT change module ports.
+	Do NOT modify the testbench.
+	Do NOT remove buffering or arbitration (must be a proper merge, not a mux).
+	Solution must be synthesizable.
+GOAL
+	Fix the RTL so that all provided tests pass.
