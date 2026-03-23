@@ -1,1 +1,12 @@
 .pytest_cache/
+# Python cache
+__pycache__/
+*.pyc
+
+# Vim swap
+*.swp
+.*.swp
+
+# Cocotb / sim
+sim_build/
+*.vvp
